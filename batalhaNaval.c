@@ -19,10 +19,24 @@ int main() {
     }
 
     // Posiciona um navio verticalmente
-    int vertical_start_row = 5;
-    int vertical_start_col = 6;
+    int vertical_start_row = 7;
+    int vertical_start_col = 5;
     for (i = 0; i < 3; i++) {
         board[vertical_start_row + i][vertical_start_col] = 3;
+    }
+
+    // Posiciona um navio diagonalmente descendente
+    int diagonal_start_row1 = 0;
+    int diagonal_start_col1 = 0;
+    for (j = 0; j < 3; j++) {
+        board[diagonal_start_row1 + j][diagonal_start_col1 + j] = 3;
+    }
+
+    // Posiciona um navio diagonalmente ascendente
+    for (i = 7, j = 2; i < 10; i++, j--) {
+        if (board[i][j] == 0) {
+            board[i][j] = 3;
+        }
     }
     
     // Exibe o tabuleiro
