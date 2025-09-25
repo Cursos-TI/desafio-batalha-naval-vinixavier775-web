@@ -1,52 +1,114 @@
 #include <stdio.h>
 
-int main() {
-    int board[10][10];
-    int i, j;
+// Constantes para o tamanho do tabuleiro e das habilidades
+#define TAMANHO_TABULEIRO 10
+#define TAMANHO_HABILIDADE 5
 
-    // Inicializa o tabuleiro com água (0)
-    for (i = 0; i < 10; i++) {
-        for (j = 0; j < 10; j++) {
-            board[i][j] = 0;
+// Definicao das matrizes de habilidades (5x5)
+// Area de efeito em forma de cone, apontando para baixo
+const int CONE[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE] = {
+    {0, 0, 1, 0, 0},
+    {0, 1, 1, 1, 0},
+    {1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0}
+};
+
+// Area de efeito em forma de cruz
+const int CRUZ[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE] = {
+    {0, 0, 1, 0, 0},
+    {0, 0, 1, 0, 0},
+    {1, 1, 1, 1, 1},
+    {0, 0, 1, 0, 0},
+    {0, 0, 1, 0, 0}
+};
+
+// Area de efeito em forma de octaedro
+const int OCTAEDRO[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE] = {
+    {0, 0, 1, 0, 0},
+    {0, 1, 1, 1, 0},
+    {1, 1, 1, 1, 1},
+    {0, 1, 1, 1, 0},
+    {0, 0, 1, 0, 0}
+};
+
+// Matriz do tabuleiro de Batalha Naval
+int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+
+// Função para inicializar o tabuleiro com zeros
+void inicializar_tabuleiro() {
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiro[i][j] = 0;
         }
     }
+}
 
-    // Posiciona um navio horizontalmente
-    int horizontal_start_row = 2;
-    int horizontal_start_col = 3;
-    for (j = 0; j < 3; j++) {
-        board[horizontal_start_row][horizontal_start_col + j] = 3;
-    }
+// Função para aplicar uma habilidade ao tabuleiro
+void aplicar_habilidade(const int habilidade[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE], int linha, int coluna) {
+    // Calcula o deslocamento do centro da habilidade
+    int deslocamento = TAMANHO_HABILIDADE / 2;
 
-    // Posiciona um navio verticalmente
-    int vertical_start_row = 7;
-    int vertical_start_col = 5;
-    for (i = 0; i < 3; i++) {
-        board[vertical_start_row + i][vertical_start_col] = 3;
-    }
+    for (int i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (int j = 0; j < TAMANHO_HABILIDADE; j++) {
+            if (habilidade[i][j] == 1) {
+                // Calcula as coordenadas do tabuleiro
+                int tabuleiro_linha = linha - deslocamento + i;
+                int tabuleiro_coluna = coluna - deslocamento + j;
 
-    // Posiciona um navio diagonalmente descendente
-    int diagonal_start_row1 = 0;
-    int diagonal_start_col1 = 0;
-    for (j = 0; j < 3; j++) {
-        board[diagonal_start_row1 + j][diagonal_start_col1 + j] = 3;
-    }
-
-    // Posiciona um navio diagonalmente ascendente
-    for (i = 7, j = 2; i < 10; i++, j--) {
-        if (board[i][j] == 0) {
-            board[i][j] = 3;
+                // Verifica se as coordenadas estao dentro dos limites do tabuleiro
+                if (tabuleiro_linha >= 0 && tabuleiro_linha < TAMANHO_TABULEIRO &&
+                    tabuleiro_coluna >= 0 && tabuleiro_coluna < TAMANHO_TABULEIRO) {
+                    tabuleiro[tabuleiro_linha][tabuleiro_coluna] = 1;
+                }
+            }
         }
     }
-    
-    // Exibe o tabuleiro
-    printf("Tabuleiro de Batalha Naval:\n");
-    for (i = 0; i < 10; i++) {
-        for (j = 0; j < 10; j++) {
-            printf("%d ", board[i][j]);
+}
+
+// Função para imprimir o tabuleiro
+void imprimir_tabuleiro() {
+    printf("   ");
+    for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+        printf("%d ", j);
+    }
+    printf("\n");
+
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        printf("%d |", i);
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            if (tabuleiro[i][j] == 1) {
+                printf("3 ");
+            } else {
+                printf("0 ");
+            }
         }
         printf("\n");
     }
+}
+
+int main() {
+    // Inicializa o tabuleiro
+    inicializar_tabuleiro();
+
+    // Define pontos de origem para cada habilidade
+    int ponto_origem_cone_linha = 2;
+    int ponto_origem_cone_coluna = 5;
+
+    int ponto_origem_cruz_linha = 7;
+    int ponto_origem_cruz_coluna = 2;
+
+    int ponto_origem_octaedro_linha = 5;
+    int ponto_origem_octaedro_coluna = 7;
+
+    // Aplica as habilidades ao tabuleiro
+    aplicar_habilidade(CONE, ponto_origem_cone_linha, ponto_origem_cone_coluna);
+    aplicar_habilidade(CRUZ, ponto_origem_cruz_linha, ponto_origem_cruz_coluna);
+    aplicar_habilidade(OCTAEDRO, ponto_origem_octaedro_linha, ponto_origem_octaedro_coluna);
+
+    // Imprime o tabuleiro com as areas de efeito marcadas
+    printf("Tabuleiro com areas de efeito das habilidades:\n");
+    imprimir_tabuleiro();
 
     return 0;
 }
